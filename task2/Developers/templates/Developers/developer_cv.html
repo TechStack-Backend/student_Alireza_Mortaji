@@ -9,12 +9,12 @@
   <p><strong>First Name:</strong> {{ developer.first_name }}</p>
   <p><strong>Last Name:</strong> {{ developer.last_name }}</p>
   <p><strong>Username:</strong> {{ developer.username }}</p>
-  <p><strong>Skils:</strong>
-    {% for skill in developer.skilld %}
+  <p><strong>Skills:</strong>
+    {% for skill in developer.skills %}
     <ul>{{skill}}</ul>
     {% endfor %}
   </p>
 
-  <a href="{% url 'developers' %}">🔙 Back to List</a>
+  <a href="/Developers/">🔙 Back to List</a>
 </body>
 </html>

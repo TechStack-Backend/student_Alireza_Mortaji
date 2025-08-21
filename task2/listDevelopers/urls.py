@@ -21,6 +21,6 @@ from Developers.views import listDevelporsView,CV_View
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('Developers/',listDevelporsView),
-    path('Developers/<str:username>/',CV_View),
+    path('Developers/',listDevelporsView,name='DevelopersList'),
+    path('Developers/<str:username>/',CV_View,name='Developer_cv'),
 ]

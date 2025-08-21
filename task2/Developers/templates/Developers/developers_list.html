@@ -53,7 +53,7 @@
             <tr>
                 <td>{{ dev.first_name }}</td>
                 <td>{{ dev.last_name }}</td>
-                <td>{{ dev.username }}</td>
+                <td><a href="{% url 'Developer_cv' dev.username %}">{{ dev.username }}</a></td>
             </tr>
             {% endfor %}
         </tbody>
