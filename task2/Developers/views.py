@@ -28,7 +28,7 @@ Develpers=[
 def listDevelporsView(request):
     if request.method=="GET":
         content={"developers":Develpers}
-        return render("Developers/developers_list.html",context=content)
+        return render(request=request,template_name="Developers/developers_list.html",context=content)
 
 
 
@@ -37,6 +37,6 @@ def CV_View(request,username):
         for dev in Develpers:
             if dev["username"]==username:
                 content={'developer':dev}
-                return render("Developers/developer_cv.html",context=content)
+                return render(request=request,template_name="Developers/developer_cv.html",context=content)
         content={"error":f"DONT FIND DEVELOPER NAMED {username}"}
-        return render("Developers/developer_cv.html",context=content)
+        return render(request=request,template_name="Developers/developer_cv.html",context=content)
