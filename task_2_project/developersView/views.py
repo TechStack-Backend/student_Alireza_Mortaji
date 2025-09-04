@@ -35,7 +35,7 @@ def DeveloperCV_View(request, username):
             if dev['username'] == username:
                 context = {"developer": dev}
                 return render(request=request, template_name="developersView/CV_View.html", context=context)
-            else:
-                error = f'Developers named {username} doesnt find'
-                context = {'error': error}
-                return render(request=request, template_name="developersView/CV_View.html", context=context)
+
+        error = f'Developers named {username} doesnt find'
+        context = {'error': error}
+        return render(request=request, template_name="developersView/CV_View.html", context=context)
