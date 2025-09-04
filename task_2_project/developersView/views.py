@@ -26,7 +26,7 @@ Develpers = [
 def DevelopersListView(request):
     if request.method == "GET":
         context = {'developers': Develpers}
-        pass
+        return render(request=request, template_name="developersView/listView.html", context=context)
 
 
 def DeveloperCV_View(request, username):
@@ -34,4 +34,8 @@ def DeveloperCV_View(request, username):
         for dev in Develpers:
             if dev['username'] == username:
                 context = {"developer": dev}
-                pass
+                return render(request=request, template_name="developersView/CV_View.html", context=context)
+            else:
+                error = f'Developers named {username} doesnt find'
+                context = {'error': error}
+                return render(request=request, template_name="developersView/CV_View.html", context=context)
