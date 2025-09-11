@@ -2,6 +2,8 @@
 env\
 
 #python cache
-__pycache__\
+*__pycache__/
 *.pyc
 
+#database
+*.sqlite3
