@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - Project Details{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="card-title mb-0">{{ project.title }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div
+                            class="project-icon-lg bg-light text-success rounded-circle d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-project-diagram fa-3x"></i>
+                        </div>
+                    </div>
+
+                    <div class="project-details">
+                        <h5>Description</h5>
+                        <p class="card-text">{{ project.description }}</p>
+
+                        {% if project.developers.all %}
+                        <div class="developers-section mt-4">
+                            <h5>Project Team</h5>
+                            <div class="row">
+                                {% for developer in project.developers.all %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="developer-avatar-sm bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                            {{ developer.first_name|first }}{{ developer.last_name|first }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">
+                                                <a href="{% url 'developers:developer_detail' developer.id %}">
+                                                    {{developer.first_name }} {{ developer.last_name }}
+                                                </a>
+                                            </h6>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'projects:project_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Projects
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-icon-lg {
+        width: 120px;
+        height: 120px;
+    }
+
+    .developer-avatar-sm {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

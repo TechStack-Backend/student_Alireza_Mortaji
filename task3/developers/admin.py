@@ -20,8 +20,3 @@ class DevelopersAdmin(admin.ModelAdmin):
 class SkillAdmin(admin.ModelAdmin):
     list_display = ("title", "developer")
     list_filter = ["developer"]
-
-
-class Developer_Inline(admin.TabularInline):
-    model = Developer
-    extra = 0
