@@ -11,6 +11,9 @@ class Developer(models.Model):
         db_table = 'developers'
         ordering = ["first_name", "last_name"]
 
+    def __str__(self):
+        return f"{self.id}_{self.first_name} {self.last_name}"
+
 
 class Skill(models.Model):
     title = models.CharField(max_length=25)
