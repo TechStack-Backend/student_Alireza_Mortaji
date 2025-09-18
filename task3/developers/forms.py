@@ -9,7 +9,7 @@ class DeveloperForm(ModelForm):
         fields = ["first_name", "last_name", "age", "email"]
 
 
-Skill_formset = inlineformset_factory(Developer, Skill, fields=["title", "description"], extra=1, can_delete=True, widgets={
+Skill_formset = inlineformset_factory(Developer, Skill, fields=["title", "description"], extra=3, can_delete=True, widgets={
     'name': forms.TextInput(attrs={'class': 'form-control'}),
     'level': forms.Select(attrs={'class': 'form-control'}),
 })
