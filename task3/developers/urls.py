@@ -5,7 +5,7 @@ from .views import *
 app_name = 'developers'
 
 urlpatterns = [
-    path('developers/', DevelopersList.as_view(), name="developer_list"),
-    path("developers/<int:pk>", DevelopersDetail.as_view(), name="developer_detail"),
-    path("developers/create", createDevelopers, name="create_developers")
+    path('', DevelopersList.as_view(), name="developer_list"),
+    path("<int:pk>", DevelopersDetail.as_view(), name="developer_detail"),
+    path("create", createDevelopers, name="create_developers")
 ]
