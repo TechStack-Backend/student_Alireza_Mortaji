@@ -1,0 +1,10 @@
+#cache:
+*.pyc
+__pycache__/
+
+
+#database
+*.sqlite3
+
+#env:
+projectVenv\
