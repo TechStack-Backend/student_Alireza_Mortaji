@@ -21,5 +21,5 @@ import developersView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('developersView.urls'))
+    path('developers/', include('developersView.urls'))
 ]
