@@ -26,23 +26,12 @@ class ProjectDetail(DetailView):
         pk = self.kwargs.get("pk")
         return get_object_or_404(Project, pk=pk)
 
-# def createProject(request):
-#     if request.method == "POST":
-#         projectForm = ProjectForm(request.POST)
-#         if projectForm.is_valid():
-#             projectForm.save()
-#             return redirect("projects:project_list")
-#     elif request.method == "GET":
-#         projectForm = ProjectForm()
-
-#     return render(request, "project/project_form.html", context={"form": projectForm})
-
 
 class CreateProject(CreateView):
     model = Project
     form_class = ProjectForm
     template_name = "project/project_form.html"
-    success_url = "projects:project_list"
+    success_url = "/projects/"
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs)
@@ -51,7 +40,7 @@ class CreateProject(CreateView):
         context = self.get_context_data()
         form.save()
         messages.success(self.request, "project added successfully!!!")
-        return redirect(self.success_url)
+        return super().form_valid(form)
 
 
 class DeleteProject(DeleteView):
@@ -60,7 +49,7 @@ class DeleteProject(DeleteView):
     success_url = "/projects/"
 
     def delete(self, request, *args, **kwargs):
-        messages.success("project deleted successfully!!!")
+        messages.success(request, "project deleted successfully!!!")
         return super().delete(request, *args, **kwargs)
 
 
@@ -69,3 +58,7 @@ class UpdateProject(UpdateView):
     form_class = ProjectForm
     template_name = "project/project_updateform.html"
     success_url = "/projects/"
+
+    def form_valid(self, form):
+        messages.success(self.request, "project updated successfully!!")
+        return super().form_valid(form)

@@ -49,23 +49,7 @@ class DevelopersCreation(CreateView):
             skillForm.instance = dev
             skillForm.save()
             messages.success(self.request, "Developer added successfully!!")
-            return redirect(self.success_url)
-
-
-# def createDevelopers(request):
-#     if request.method == "POST":
-#         developerForm = DeveloperForm(request.POST)
-#         skillForm = Skill_formset(request.POST)
-#         if developerForm.is_valid() and skillForm.is_valid():
-#             dev = developerForm.save()
-#             skillForm.instance = dev
-#             skillForm.save()
-#             return redirect("developers:developer_list")
-#     elif request.method == "GET":
-#         developerForm = DeveloperForm()
-#         skillForm = Skill_formset()
-
-#     return render(request, template_name="developers/developer_form.html", context={"form": developerForm, "skillForm": skillForm})
+            return super().form_valid(form)
 
 
 class UpdateDevelopers(UpdateView):
@@ -75,27 +59,10 @@ class UpdateDevelopers(UpdateView):
     success_url = "/developers/"
     context_object_name = 'developers'
 
-    # def form_valid(self, form):
-    #     context = self.get_context_data()
-    #     skillForm = context["skillForm"]
+    def form_valid(self, form):
 
-    #     if skillForm.is_valid():
-    #         print("yes")
-    #         dev = form.save()
-    #         skillForm.instance = dev
-    #         skillForm.save()
-    #         messages.success(self.request, "Developer updated successfully!!")
-    #         return redirect(self.success_url)
-    #     return redirect(self.success_url)
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     if self.request.POST:
-    #         context["skillForm"] = Skill_formset(self.request.POST)
-    #     else:
-    #         dev = context.get("object")
-    #         context["skillForm"] = Skill_formset(instance=dev)
-    #     return context
+        messages.success(self.request, "Developer updated successfully!!")
+        return super().form_valid(form)
 
 
 class DeleteDevelopers(DeleteView):
@@ -104,5 +71,5 @@ class DeleteDevelopers(DeleteView):
     success_url = "/developers/"
 
     def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "developers deleted successfully!!!")
+        messages.success(request, "developers deleted successfully!!!")
         return super().delete(request, *args, **kwargs)

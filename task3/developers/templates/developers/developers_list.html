@@ -11,7 +11,11 @@
             <p class="lead text-muted">Meet the brilliant minds behind our projects</p>
         </div>
     </div>
-
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     <div class="row">
         {% for developer in developers %}
         <div class="col-md-4 mb-4">

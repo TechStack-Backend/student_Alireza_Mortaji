@@ -3,6 +3,7 @@
 {% block title %}Our Projects{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
     <div class="row mb-4">
         <div class="col-12 text-center">
@@ -10,7 +11,11 @@
             <p class="lead text-muted">Discover the innovative solutions we've built</p>
         </div>
     </div>
-
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
     <div class="row">
         {% for project in projects %}
         <div class="col-md-6 mb-4">
