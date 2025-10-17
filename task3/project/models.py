@@ -5,5 +5,5 @@ from developers.models import Developer
 
 class Project(models.Model):
     title = models.CharField(max_length=25)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     developers = models.ManyToManyField(Developer, related_name='projects')

@@ -8,6 +8,14 @@ class DeveloperForm(ModelForm):
         model = Developer
         fields = ["first_name", "last_name", "age", "email"]
 
+    def clean_age(self):
+        age = self.cleaned_data.get("age")
+
+        if age < 18:
+            raise forms.ValidationError(
+                "you should be more than 18 years old!!")
+        return age
+
 
 Skill_formset = inlineformset_factory(Developer, Skill, fields=["title", "description"], extra=3, can_delete=True, widgets={
     'name': forms.TextInput(attrs={'class': 'form-control'}),

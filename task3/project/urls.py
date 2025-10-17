@@ -8,5 +8,5 @@ app_name = "projects"
 urlpatterns = [
     path('', ProjectsList.as_view(), name="project_list"),
     path("<int:pk>", ProjectDetail.as_view(), name="project_detail"),
-    path("create", createProject, name="project_create")
+    path("create", CreateProject.as_view(), name="project_create")
 ]

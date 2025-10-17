@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 
@@ -13,13 +13,17 @@ class DevelopersList(ListView):
     template_name = "developers/developers_list.html"
 
     def get_queryset(self):
-        return super().get_queryset()
+        return Developer.objects.all()
 
 
 class DevelopersDetail(DetailView):
     model = Developer
     template_name = "developers/developer_detail.html"
     context_object_name = "developer"
+
+    def get_object(self, queryset=...):
+        pk = self.kwargs.get("pk")
+        return get_object_or_404(Developer, pk=pk)
 
 
 class DevelopersCreation(CreateView):
@@ -37,20 +41,14 @@ class DevelopersCreation(CreateView):
         return context
 
     def form_valid(self, form):
-        print("form_valid called")
         context = self.get_context_data()
         skillForm = context["skillForm"]
-        print("skillform get")
 
         if skillForm.is_valid():
-            print("if is okey")
             dev = form.save()
-            print("dev save is ok")
             skillForm.instance = dev
             skillForm.save()
-            print("skill save is ok")
             messages.success(self.request, "Developer added successfully!!")
-            print("message sended")
             return redirect(self.success_url)
 
 
