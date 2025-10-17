@@ -56,5 +56,9 @@ class CreateProject(CreateView):
 
 class DeleteProject(DeleteView):
     model = Project
-    template_name = ""
-    success_url = ""
+    template_name = "project/project_detail.html"
+    success_url = "/projects/"
+
+    def delete(self, request, *args, **kwargs):
+        messages.success("project deleted successfully!!!")
+        return super().delete(request, *args, **kwargs)

@@ -68,17 +68,18 @@ class DevelopersCreation(CreateView):
 #     return render(request, template_name="developers/developer_form.html", context={"form": developerForm, "skillForm": skillForm})
 
 
-class DevelopersUpdate(UpdateView):
+class UpdateDevelopers(UpdateView):
     model = Developer
     form_class = DeveloperForm
     template_name = "developers/developer_form.html"
     success_url = "developers/"
 
 
-class DevelopersDelete(DeleteView):
+class DeleteDevelopers(DeleteView):
     model = Developer
-    template_name = ""
-    success_url = ""
+    template_name = "developers/developer_detail.html"
+    success_url = "/developers/"
 
     def delete(self, request, *args, **kwargs):
+        messages.success("developers deleted successfully!!!")
         return super().delete(request, *args, **kwargs)
