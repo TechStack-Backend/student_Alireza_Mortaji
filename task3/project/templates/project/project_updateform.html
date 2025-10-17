@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Project{% else %}Create New Project{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-project-diagram"></i>
+                    {% if form.instance.pk %}Edit Project{% else %}Create New Project{% endif %}
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Title Field -->
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                            <strong>Project Title</strong>
+                        </label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.title.errors %}
+                            <small>{{ error }}</small><br>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Enter a descriptive title for your project.</div>
+                    </div>
+
+                    <!-- Description Field -->
+                    <div class="mb-4">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                            <strong>Description</strong>
+                        </label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.description.errors %}
+                            <small>{{ error }}</small><br>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Provide detailed information about the project.</div>
+                    </div>
+
+                    <!-- Developers Field -->
+                    <div class="mb-4">
+                        <label for="{{ form.developers.id_for_label }}" class="form-label">
+                            <strong>Developers</strong>
+                        </label>
+                        {{ form.developers }}
+                        {% if form.developers.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.developers.errors %}
+                            <small>{{ error }}</small><br>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="form-text">Select one or more developers for this project (hold Ctrl/Cmd to select
+                            multiple).</div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Project
+                        </button>
+                        <a href="{% url 'projects:project_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add Bootstrap classes to all form fields
+        const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"]');
+        textInputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+
+        // Style textarea
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(textarea => {
+            textarea.classList.add('form-control');
+            textarea.style.minHeight = '120px';
+        });
+
+        // Style select multiple (developers field)
+        const selectMultiple = document.querySelectorAll('select[multiple]');
+        selectMultiple.forEach(select => {
+            select.classList.add('form-select');
+            select.size = 5; // Show 5 options at once
+        });
+
+        // Add help text for multiple selection
+        const developersField = document.querySelector('#{{ form.developers.id_for_label }}');
+        if (developersField) {
+            developersField.setAttribute('title', 'Hold Ctrl/Cmd to select multiple developers');
+        }
+    });
+</script>
+{% endblock %}

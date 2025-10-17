@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, DeleteView, UpdateView
 from .models import Project
 from .forms import ProjectForm
 from django.contrib import messages
@@ -62,3 +62,10 @@ class DeleteProject(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success("project deleted successfully!!!")
         return super().delete(request, *args, **kwargs)
+
+
+class UpdateProject(UpdateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = "project/project_updateform.html"
+    success_url = "/projects/"

@@ -71,8 +71,31 @@ class DevelopersCreation(CreateView):
 class UpdateDevelopers(UpdateView):
     model = Developer
     form_class = DeveloperForm
-    template_name = "developers/developer_form.html"
-    success_url = "developers/"
+    template_name = "developers/developer_updateform.html"
+    success_url = "/developers/"
+    context_object_name = 'developers'
+
+    # def form_valid(self, form):
+    #     context = self.get_context_data()
+    #     skillForm = context["skillForm"]
+
+    #     if skillForm.is_valid():
+    #         print("yes")
+    #         dev = form.save()
+    #         skillForm.instance = dev
+    #         skillForm.save()
+    #         messages.success(self.request, "Developer updated successfully!!")
+    #         return redirect(self.success_url)
+    #     return redirect(self.success_url)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     if self.request.POST:
+    #         context["skillForm"] = Skill_formset(self.request.POST)
+    #     else:
+    #         dev = context.get("object")
+    #         context["skillForm"] = Skill_formset(instance=dev)
+    #     return context
 
 
 class DeleteDevelopers(DeleteView):
@@ -81,5 +104,5 @@ class DeleteDevelopers(DeleteView):
     success_url = "/developers/"
 
     def delete(self, request, *args, **kwargs):
-        messages.success("developers deleted successfully!!!")
+        messages.success(self.request, "developers deleted successfully!!!")
         return super().delete(request, *args, **kwargs)
