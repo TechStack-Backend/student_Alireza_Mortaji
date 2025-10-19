@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView, U
 from .models import Project
 from .forms import ProjectForm
 from django.contrib import messages
-
+from django.urls import reverse_lazy
 
 # Create your views here.
 
@@ -15,6 +15,13 @@ class ProjectsList(ListView):
 
     def get_queryset(self):
         return Project.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        print("MESSAGES:", [
+              m.message for m in messages.get_messages(self.request)])
+        return context
 
 
 class ProjectDetail(DetailView):
@@ -46,7 +53,7 @@ class CreateProject(CreateView):
 class DeleteProject(DeleteView):
     model = Project
     template_name = "project/project_detail.html"
-    success_url = "/projects/"
+    success_url = reverse_lazy("projects:project_list")
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, "project deleted successfully!!!")
