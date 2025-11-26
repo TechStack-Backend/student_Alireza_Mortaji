@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Your App</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-brand">YourApp</a>
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'profile' %}" class="nav-link active">Profile</a>
+                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-card">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <h1 class="profile-title">Your Profile</h1>
+                <p class="profile-subtitle">Manage your personal information</p>
+            </div>
+
+            <div class="profile-content">
+                <!-- Profile Display Section -->
+                <div class="profile-display {% if not form.instance.pk %}hidden{% endif %}" id="profileDisplay">
+                    <div class="profile-avatar-section">
+                        <div class="avatar-container">
+                            {% if form.instance.photo %}
+                            <img src="{{ form.instance.photo.url }}" alt="Profile Photo" class="profile-avatar"
+                                id="profileImage">
+                            {% else %}
+                            <div class="profile-avatar placeholder" id="profileImage">
+                                {{ user.username|first|upper }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="profile-info">
+                            <h2 class="username">{{ user.username }}</h2>
+                            <p class="user-email">{{ user.email }}</p>
+                            <div class="profile-stats">
+                                <div class="stat">
+                                    <span class="stat-number">Member since</span>
+                                    <span class="stat-label">{{ user.date_joined|date:"M Y" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if form.instance.bio %}
+                    <div class="bio-section">
+                        <h3 class="section-title">About Me</h3>
+                        <p class="bio-content">{{ form.instance.bio }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="profile-actions">
+                        <button type="button" class="btn btn-primary" onclick="toggleEdit()">
+                            <span class="btn-icon">✏️</span>
+                            Edit Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Profile Edit Form -->
+                <div class="profile-edit {% if not form.instance.pk %}active{% endif %}" id="profileEdit">
+                    <form method="POST" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+
+                        <div class="form-header">
+                            <h2>{{ form.instance.pk|yesno:"Edit Profile,Create Profile" }}</h2>
+                            {% if form.instance.pk %}
+                            <button type="button" class="btn btn-secondary" onclick="toggleEdit()">
+                                <span class="btn-icon">←</span>
+                                Cancel
+                            </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div class="form-section">
+                            <label class="section-label">Profile Photo</label>
+                            <div class="photo-upload-container">
+                                <div class="current-photo">
+                                    {% if form.instance.photo %}
+                                    <img src="{{ form.instance.photo.url }}" alt="Current Photo" class="upload-preview"
+                                        id="photoPreview">
+                                    {% else %}
+                                    <div class="upload-preview placeholder" id="photoPreview">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="upload-controls">
+                                    <label for="id_photo" class="upload-btn">
+                                        <span class="btn-icon">📷</span>
+                                        Choose Photo
+                                    </label>
+                                    {{ form.photo }}
+                                    <div class="upload-hint">JPG, PNG or GIF. Max 5MB.</div>
+                                    {% if form.photo.errors %}
+                                    <div class="error-message">{{ form.photo.errors.0 }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Username Display (Read-only) -->
+                        <div class="form-section">
+                            <label class="form-label">Username</label>
+                            <div class="read-only-field">
+                                {{ user.username }}
+                            </div>
+                            <small class="field-help">Username cannot be changed</small>
+                        </div>
+
+                        <!-- Email Display (Read-only) -->
+                        <div class="form-section">
+                            <label class="form-label">Email</label>
+                            <div class="read-only-field">
+                                {{ user.email }}
+                            </div>
+                            <small class="field-help">Contact admin to change email</small>
+                        </div>
+
+                        <!-- Bio Field -->
+                        <div class="form-section">
+                            <label for="id_bio" class="form-label">Bio</label>
+                            {{ form.bio }}
+                            {% if form.bio.errors %}
+                            <div class="error-message">{{ form.bio.errors.0 }}</div>
+                            {% endif %}
+                            <small class="field-help">Tell us a little about yourself</small>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-success">
+                                <span class="btn-icon">💾</span>
+                                {{ form.instance.pk|yesno:"Update Profile,Create Profile" }}
+                            </button>
+
+                            {% if form.instance.pk %}
+                            <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                                <span class="btn-icon">🗑️</span>
+                                Delete Profile
+                            </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Delete Profile</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your profile? This will remove your photo and bio, but your account
+                    will remain active.</p>
+            </div>
+            <div class="modal-actions">
+                <form method="POST" action="{% url 'delete_profile' %}" class="delete-form">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between display and edit modes
+        function toggleEdit() {
+            const display = document.getElementById('profileDisplay');
+            const edit = document.getElementById('profileEdit');
+
+            display.classList.toggle('hidden');
+            edit.classList.toggle('active');
+        }
+
+        // Photo preview
+        document.getElementById('id_photo').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('photoPreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    if (preview.classList.contains('placeholder')) {
+                        preview.classList.remove('placeholder');
+                        preview.innerHTML = '';
+                    }
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Modal functions
+        function confirmDelete() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(msg => {
+                msg.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+
+</html>
