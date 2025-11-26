@@ -5,10 +5,12 @@ from .forms import ProjectForm
 from django.contrib import messages
 from django.urls import reverse_lazy
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 # Create your views here.
 
 
-class ProjectsList(ListView):
+class ProjectsList(LoginRequiredMixin, ListView):
     model = Project
     template_name = "project/projects_list.html"
     context_object_name = "projects"
@@ -24,7 +26,7 @@ class ProjectsList(ListView):
         return context
 
 
-class ProjectDetail(DetailView):
+class ProjectDetail(LoginRequiredMixin, DetailView):
     model = Project
     template_name = "project/project_detail.html"
     context_object_name = "project"
@@ -34,7 +36,7 @@ class ProjectDetail(DetailView):
         return get_object_or_404(Project, pk=pk)
 
 
-class CreateProject(CreateView):
+class CreateProject(LoginRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
     template_name = "project/project_form.html"
@@ -50,7 +52,7 @@ class CreateProject(CreateView):
         return super().form_valid(form)
 
 
-class DeleteProject(DeleteView):
+class DeleteProject(LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/project_detail.html"
     success_url = reverse_lazy("projects:project_list")
@@ -60,7 +62,7 @@ class DeleteProject(DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class UpdateProject(UpdateView):
+class UpdateProject(LoginRequiredMixin, UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = "project/project_updateform.html"

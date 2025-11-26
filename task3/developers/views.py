@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .models import Developer, Skill
 from .forms import *
 # Create your views here.
 
 
-class DevelopersList(ListView):
+class DevelopersList(LoginRequiredMixin, ListView):
     model = Developer
     context_object_name = 'developers'
     template_name = "developers/developers_list.html"
@@ -16,7 +18,7 @@ class DevelopersList(ListView):
         return Developer.objects.all()
 
 
-class DevelopersDetail(DetailView):
+class DevelopersDetail(LoginRequiredMixin, DetailView):
     model = Developer
     template_name = "developers/developer_detail.html"
     context_object_name = "developer"
@@ -26,7 +28,7 @@ class DevelopersDetail(DetailView):
         return get_object_or_404(Developer, pk=pk)
 
 
-class DevelopersCreation(CreateView):
+class DevelopersCreation(LoginRequiredMixin, CreateView):
     model = Developer
     form_class = DeveloperForm
     template_name = "developers/developer_form.html"
@@ -52,7 +54,7 @@ class DevelopersCreation(CreateView):
             return super().form_valid(form)
 
 
-class UpdateDevelopers(UpdateView):
+class UpdateDevelopers(LoginRequiredMixin, UpdateView):
     model = Developer
     form_class = DeveloperForm
     template_name = "developers/developer_updateform.html"
@@ -65,7 +67,7 @@ class UpdateDevelopers(UpdateView):
         return super().form_valid(form)
 
 
-class DeleteDevelopers(DeleteView):
+class DeleteDevelopers(LoginRequiredMixin, DeleteView):
     model = Developer
     template_name = "developers/developer_detail.html"
     success_url = "/developers/"
