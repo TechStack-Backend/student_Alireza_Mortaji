@@ -63,7 +63,6 @@
                 <div class="form-group">
                     <div class="password-header">
                         <label for="id_password" class="form-label">Password</label>
-                        <a href="{% url 'password_reset' %}" class="forgot-password">Forgot Password?</a>
                     </div>
                     <div class="input-container">
                         {{ form.password }}
@@ -89,16 +88,6 @@
                 <span>Or continue with</span>
             </div>
 
-            <div class="social-login">
-                <button type="button" class="social-btn google-btn">
-                    <span class="social-icon">🔍</span>
-                    Google
-                </button>
-                <button type="button" class="social-btn github-btn">
-                    <span class="social-icon">💻</span>
-                    GitHub
-                </button>
-            </div>
 
             <div class="register-link">
                 <p>Don't have an account? <a href="{% url 'register' %}" class="register-link-text">Create account</a>

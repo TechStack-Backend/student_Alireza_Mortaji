@@ -54,6 +54,10 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="user-welcome">
+                <span class="welcome-text">Welcome,</span>
+                <span class="username">{{ user.username }}</span>
+            </div>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -63,15 +67,12 @@
                     </li>
                 </ul>
             </div>
-            <div class="user-welcome">
-                <span class="welcome-text">Welcome,</span>
-                <span class="username">{{ user.username }}</span>
-            </div>
-            <form method="post" action="{% url 'logout' %}" class="logout-form">
+
+            <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
                 {% csrf_token %}
                 <button type="submit" class="logout-btn">
                     <span class="btn-text">Logout</span>
-                    <span class="btn-icon">🚪</span>
+
                 </button>
             </form>
         </div>

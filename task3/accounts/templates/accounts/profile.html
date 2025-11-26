@@ -13,11 +13,11 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{% url 'home' %}" class="nav-brand">YourApp</a>
+            <a href="{% url 'developers:developer_list' %}" class="nav-brand">Developers</a>
             <div class="nav-links">
-                <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'profile' %}" class="nav-link active">Profile</a>
-                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                <a href="{% url 'projects:project_list' %}" class="nav-link">Projects</a>
+                <a href="{% url 'accounts:profile' %}" class="nav-link active">Profile</a>
+                <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
                     {% csrf_token %}
                     <button type="submit" class="logout-btn">Logout</button>
                 </form>
@@ -38,8 +38,8 @@
                 <div class="profile-display {% if not form.instance.pk %}hidden{% endif %}" id="profileDisplay">
                     <div class="profile-avatar-section">
                         <div class="avatar-container">
-                            {% if form.instance.photo %}
-                            <img src="{{ form.instance.photo.url }}" alt="Profile Photo" class="profile-avatar"
+                            {% if form.instance.profile_img %}
+                            <img src="{{ form.instance.profile_img.url }}" alt="Profile Photo" class="profile-avatar"
                                 id="profileImage">
                             {% else %}
                             <div class="profile-avatar placeholder" id="profileImage">
@@ -94,9 +94,9 @@
                             <label class="section-label">Profile Photo</label>
                             <div class="photo-upload-container">
                                 <div class="current-photo">
-                                    {% if form.instance.photo %}
-                                    <img src="{{ form.instance.photo.url }}" alt="Current Photo" class="upload-preview"
-                                        id="photoPreview">
+                                    {% if form.instance.profile_img %}
+                                    <img src="{{ form.instance.profile_img.url }}" alt="Current Photo"
+                                        class="upload-preview" id="photoPreview">
                                     {% else %}
                                     <div class="upload-preview placeholder" id="photoPreview">
                                         {{ user.username|first|upper }}
@@ -104,19 +104,21 @@
                                     {% endif %}
                                 </div>
                                 <div class="upload-controls">
-                                    <label for="id_photo" class="upload-btn">
-                                        <span class="btn-icon">📷</span>
-                                        Choose Photo
-                                    </label>
-                                    {{ form.photo }}
+                                    <div class="file-input-wrapper">
+                                        <button type="button" class="upload-btn" id="uploadTrigger">
+                                            <span class="btn-icon">📷</span>
+                                            Choose Photo
+                                        </button>
+                                        <input type="file" name="profile_img" accept="image/*" id="id_photo"
+                                            style="display: none;">
+                                    </div>
                                     <div class="upload-hint">JPG, PNG or GIF. Max 5MB.</div>
-                                    {% if form.photo.errors %}
-                                    <div class="error-message">{{ form.photo.errors.0 }}</div>
+                                    {% if form.profile_img.errors %}
+                                    <div class="error-message">{{ form.profile_img.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                             </div>
                         </div>
-
                         <!-- Username Display (Read-only) -->
                         <div class="form-section">
                             <label class="form-label">Username</label>
@@ -151,13 +153,6 @@
                                 <span class="btn-icon">💾</span>
                                 {{ form.instance.pk|yesno:"Update Profile,Create Profile" }}
                             </button>
-
-                            {% if form.instance.pk %}
-                            <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                                <span class="btn-icon">🗑️</span>
-                                Delete Profile
-                            </button>
-                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -165,26 +160,7 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal-overlay" id="deleteModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Delete Profile</h3>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete your profile? This will remove your photo and bio, but your account
-                    will remain active.</p>
-            </div>
-            <div class="modal-actions">
-                <form method="POST" action="{% url 'delete_profile' %}" class="delete-form">
-                    {% csrf_token %}
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete Profile</button>
-                </form>
-            </div>
-        </div>
     </div>
-
     <script>
         // Toggle between display and edit modes
         function toggleEdit() {
@@ -195,22 +171,69 @@
             edit.classList.toggle('active');
         }
 
-        // Photo preview
-        document.getElementById('id_photo').addEventListener('change', function (e) {
-            const file = e.target.files[0];
+        // Photo preview - more robust version
+        document.addEventListener('DOMContentLoaded', function () {
+            const trigger = document.getElementById('uploadTrigger');
+            const photoInput = document.getElementById('id_photo');
+
             const preview = document.getElementById('photoPreview');
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    if (preview.classList.contains('placeholder')) {
-                        preview.classList.remove('placeholder');
-                        preview.innerHTML = '';
+
+            if (trigger && photoInput) {
+                trigger.addEventListener('click', function () {
+                    photoInput.click();
+                });
+            }
+
+
+            if (photoInput) {
+                photoInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+
+                    if (file) {
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Please select a valid image file (JPG, PNG, or GIF)');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file size (5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size must be less than 5MB');
+                            this.value = '';
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (preview.classList.contains('placeholder')) {
+                                // Convert placeholder div to img
+                                const newImg = document.createElement('img');
+                                newImg.src = e.target.result;
+                                newImg.alt = 'Profile Photo Preview';
+                                newImg.className = 'upload-preview';
+                                newImg.id = 'photoPreview';
+                                preview.parentNode.replaceChild(newImg, preview);
+
+                                // Update reference
+                                preview = newImg;
+                            } else {
+                                preview.src = e.target.result;
+                            }
+                        }
+                        reader.readAsDataURL(file);
                     }
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
+                });
+            }
+
+            // Initialize preview based on current state
+            if (preview && preview.classList.contains('placeholder')) {
+                // It's a placeholder div, keep as is
+            } else if (preview) {
+                // It's an image, ensure it's visible
+                preview.style.display = 'block';
             }
         });
 
@@ -224,11 +247,14 @@
         }
 
         // Close modal when clicking outside
-        document.getElementById('deleteModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
+        const deleteModal = document.getElementById('deleteModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
 
         // Auto-hide messages after 5 seconds
         setTimeout(() => {
@@ -238,6 +264,7 @@
             });
         }, 5000);
     </script>
+
 </body>
 
 </html>

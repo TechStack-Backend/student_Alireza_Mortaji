@@ -27,8 +27,10 @@ def ProfileView(request):
             form = ProfileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save()
-            return redirect('profile_detail')
+            profile = form.save(commit=False)
+            profile.user = request.user
+            profile.save()
+            return redirect('accounts:profile')
     else:
         if profile:
             form = ProfileForm(instance=profile)
