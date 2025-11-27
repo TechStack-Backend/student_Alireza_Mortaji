@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Our Projects{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-3">Our Amazing Projects</h1>
+            <p class="lead text-muted">Discover the innovative solutions we've built</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-6 mb-4">
+            <div class="card project-card h-100 shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h5 class="card-title mb-0">{{ project.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div
+                            class="project-icon bg-light text-success rounded-circle d-inline-flex align-items-center justify-content-center">
+                            <i class="fas fa-project-diagram fa-2x"></i>
+                        </div>
+                    </div>
+
+                    <div class="project-info">
+                        <p class="card-text">
+                            <i class="fas fa-align-left me-2"></i>
+                            {{ project.description|truncatewords:30 }}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'projects:project_detail' project.id %}" class="btn btn-success btn-sm w-100">
+                        View Project Details
+                        <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                No projects found.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{% url 'projects:project_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Project
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .project-card {
+        transition: transform 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .project-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .skill-badge {
+        font-size: 0.85rem;
+        margin: 2px;
+    }
+</style>
+{% endblock %}

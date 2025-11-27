@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ developer.first_name }} {{ developer.last_name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <div
+                        class="developer-avatar-lg bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3">
+                        {{ developer.first_name|first }}{{ developer.last_name|first }}
+                    </div>
+                    <h3>{{ developer.first_name }} {{ developer.last_name }}</h3>
+                    <p class="text-muted">Developer</p>
+
+                    <div class="developer-contact-info">
+                        <p>
+                            <i class="fas fa-envelope me-2"></i>
+                            <a href="mailto:{{ developer.email }}">{{ developer.email }}</a>
+                        </p>
+                        <p>
+                            <i class="fas fa-birthday-cake me-2"></i>
+                            Age: {{ developer.age }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Skills & Expertise</h5>
+                </div>
+                <div class="card-body">
+                    {% if developer.skills.all %}
+                    <div class="row">
+                        {% for skill in developer.skills.all %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ skill.title }}</h6>
+                                    <p class="card-text text-muted">{{ skill.description|truncatewords:20 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        This developer hasn't added any skills yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a href="{% url 'developers:developer_list' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Developers
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
