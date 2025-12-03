@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logged Out | Your Django App</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/logout.css' %}">
+</head>
+
+<body>
+    <div class="logout-container">
+        <div class="logout-card">
+            <div class="card-header">
+                <div class="logo">
+                    <div class="logo-icon">👋</div>
+                </div>
+                <h1 class="logout-title">You've been logged out</h1>
+                <p class="logout-subtitle">Thank you for using our service. We hope to see you again soon!</p>
+            </div>
+
+            <div class="success-animation">
+                <div class="checkmark">✓</div>
+            </div>
+
+            <div class="logout-actions">
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    <span class="btn-text">Sign In Again</span>
+                    <span class="btn-icon">↻</span>
+                </a>
+
+                <a href="{% url 'home' %}" class="btn btn-secondary">
+                    <span class="btn-text">Return to Homepage</span>
+                    <span class="btn-icon">🏠</span>
+                </a>
+            </div>
+
+            <div class="logout-stats">
+                <div class="stat-item">
+                    <div class="stat-number">🔒</div>
+                    <div class="stat-text">Your session has been securely closed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">🔄</div>
+                    <div class="stat-text">Ready to continue whenever you are</div>
+                </div>
+            </div>
+
+            <div class="security-notice">
+                <div class="notice-icon">ℹ️</div>
+                <div class="notice-content">
+                    <strong>Security Tip:</strong> For complete security, please close your browser if you're on a
+                    shared device.
+                </div>
+            </div>
+        </div>
+
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <script>
+        // Add animation delay for checkmark
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkmark = document.querySelector('.checkmark');
+            setTimeout(() => {
+                checkmark.style.opacity = '1';
+                checkmark.style.transform = 'scale(1)';
+            }, 300);
+        });
+    </script>
+</body>
+
+</html>
