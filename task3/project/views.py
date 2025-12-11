@@ -12,6 +12,57 @@ from django.contrib.auth.decorators import permission_required
 # Create your views here.
 
 
+# --------------------------------------------------------------------------------
+
+# this  decorator  checks that user is owner or have access to this view or not
+
+
+def owner_or_have_permission(model, perm=None):
+    def decorator(view_fun):
+        @wraps(view_fun)
+        def wrapper(request, *arge, **kwargs):
+            user = request.user
+            obj = get_object_or_404(model, pk=kwargs.get('pk'))
+            if getattr(obj, name="owner") == user:
+                return view_fun(request, *arge, **kwargs)
+
+            if user.has_perm(perm):
+                return view_fun(request, *arge, **kwargs)
+
+            raise PermissionDenied(
+                "You do not have permission to access this.")
+        return wrapper
+    return decorator
+
+
+class OwnerOrPermissionMixin(PermissionRequiredMixin):
+
+    owner_field = "owner"
+
+    def has_permission(self):
+        user = self.request.user
+        obj = self.get_object()
+
+        try:
+            if getattr(obj, self.owner_fielder) == user:
+                print("owner is true")
+                return True
+        except:
+            pass
+
+        if self.permission_required and user.has_perm(self.permission_required):
+            print("has permission")
+            return True
+
+        return False
+
+    def handle_no_permission(self):
+        messages.error(self.request, self.permission_denied_message)
+        raise PermissionDenied(self.permission_denied_message)
+
+
+# ---------------------------------------------------------------------------------
+
 class ProjectsList(LoginRequiredMixin, ListView):
     model = Project
     template_name = "project/projects_list.html"
@@ -85,36 +136,16 @@ class DeleteProject(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-# --------------------------------------------------------------------------------
-
-# this  decorator  checks that user is owner or have access to this view or not
-
-
-def owner_or_have_permission(model, perm=None):
-    def decorator(view_fun):
-        @wraps(view_fun)
-        def wrapper(request, *arge, **kwargs):
-            user = request.user
-            obj = get_object_or_404(model, pk=kwargs.get('pk'))
-            if getattr(obj, name="owner"):
-                return view_fun(request, *arge, **kwargs)
-
-            if user.has_perm(perm):
-                return view_fun(request, *arge, **kwargs)
-
-            raise PermissionDenied(
-                "You do not have permission to access this.")
-        return wrapper
-    return decorator
-
-
-# ---------------------------------------------------------------------------------
-
-class UpdateProject(LoginRequiredMixin, UpdateView):
+class UpdateProject(LoginRequiredMixin, OwnerOrPermissionMixin, UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = "project/project_updateform.html"
     success_url = "/projects/"
+    owner_field = 'owner'
+    login_url = 'accounts:login'
+    raise_exception = False
+    permission_required = "project.change_project"
+    permission_denied_message = "you dont have access to this update the project"
 
     def form_valid(self, form):
         messages.success(self.request, "project updated successfully!!")
