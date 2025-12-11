@@ -7,3 +7,6 @@ class Project(models.Model):
     title = models.CharField(max_length=25)
     description = models.TextField(blank=True)
     developers = models.ManyToManyField(Developer, related_name='projects')
+
+    class Meta:
+        permissions = [("detail_project", "Can see detail of projects")]

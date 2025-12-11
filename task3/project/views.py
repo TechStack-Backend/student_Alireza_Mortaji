@@ -79,10 +79,12 @@ class ProjectsList(LoginRequiredMixin, ListView):
         return context
 
 
-class ProjectDetail(LoginRequiredMixin, DetailView):
+class ProjectDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Project
     template_name = "project/project_detail.html"
     context_object_name = "project"
+    permission_denied_message = "you dont have access to see details of project"
+    permission_required = "project.detail_project"
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get("pk")
