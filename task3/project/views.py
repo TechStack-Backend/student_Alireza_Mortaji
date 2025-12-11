@@ -5,7 +5,7 @@ from .forms import ProjectForm
 from django.contrib import messages
 from django.urls import reverse_lazy
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
@@ -65,10 +65,19 @@ def CreateProject(request):
         return render(request, template_name="project/project_form.html", context={'form': form})
 
 
-class DeleteProject(LoginRequiredMixin, DeleteView):
+class DeleteProject(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Project
     template_name = "project/project_detail.html"
     success_url = reverse_lazy("projects:project_list")
+    raise_exception = False
+    permission_required = "project.delete_project"
+    permission_denied_message = "you don't have access to delete this project"
+    login_url = 'accounts:login'
+
+    def handle_no_permission(self):
+        messages.error(
+            self.request, "you don't have access to delete this project")
+        return redirect('projects:project_list')
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, "project deleted successfully!!!")
