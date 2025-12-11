@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import permission_required
 
 # Create your views here.
 
@@ -36,20 +37,32 @@ class ProjectDetail(LoginRequiredMixin, DetailView):
         return get_object_or_404(Project, pk=pk)
 
 
-class CreateProject(LoginRequiredMixin, CreateView):
-    model = Project
-    form_class = ProjectForm
-    template_name = "project/project_form.html"
-    success_url = "/projects/"
+# class CreateProject(LoginRequiredMixin, CreateView):
+#     model = Project
+#     form_class = ProjectForm
+#     template_name = "project/project_form.html"
+#     success_url = "/projects/"
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
+#     def get_context_data(self, **kwargs):
+#         return super().get_context_data(**kwargs)
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        form.save()
-        messages.success(self.request, "project added successfully!!!")
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         form.save()
+#         messages.success(self.request, "project added successfully!!!")
+#         return super().form_valid(form)
+
+@permission_required(perm=['project.add_project'], login_url='accounts:login')
+def CreateProject(request):
+    if request.method == "POST":
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            return redirect('projects:project_list')
+    else:
+        form = ProjectForm()
+        return render(request, template_name="project/project_form.html", context={'form': form})
 
 
 class DeleteProject(LoginRequiredMixin, DeleteView):
