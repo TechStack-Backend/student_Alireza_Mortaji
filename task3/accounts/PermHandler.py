@@ -8,13 +8,13 @@ from django.contrib import messages
 # this  decorator  checks that user is owner or have access to this view or not
 
 
-def owner_or_have_permission(model, perm=None):
+def owner_or_have_permission(model, owner_field="owner", perm=None):
     def decorator(view_fun):
         @wraps(view_fun)
         def wrapper(request, *arge, **kwargs):
             user = request.user
             obj = get_object_or_404(model, pk=kwargs.get('pk'))
-            if getattr(obj, name="owner") == user:
+            if getattr(obj, name=owner_field) == user:
                 return view_fun(request, *arge, **kwargs)
 
             if user.has_perm(perm):
@@ -34,15 +34,12 @@ class OwnerOrPermissionMixin(PermissionRequiredMixin):
         user = self.request.user
         obj = self.get_object()
 
-        try:
-            if getattr(obj, self.owner_fielder) == user:
-                print("owner is true")
-                return True
-        except:
-            pass
+        if getattr(obj, self.owner_field) == user:
+            print("*******owner is true********")
+            return True
 
         if self.permission_required and user.has_perm(self.permission_required):
-            print("has permission")
+            print("***********has permission********")
             return True
 
         return False

@@ -23,22 +23,21 @@ def CreateGroups(sender, **kwargs):
     Developer, D_created = Group.objects.get_or_create(name='Developer')
 
     AdminsPerms = ['project.add_project', 'project.change_project',
-                   'project.delete_project', 'project.view_project', 'accounts.change_profile']
+                   'project.delete_project', 'project.view_project',
+                   'accounts.change_profile', 'developers.change_developer',
+                   'developers.view_developer']
+
     MangerPerms = ['project.add_project', 'project.change_project',
-                   'project.view_project', 'accounts.view_profile']
-    DeveloperPerms = ['accounts.view_profile', 'project.view_project']
+                   'project.view_project', 'accounts.view_profile',
+                   'developers.view_developer']
+    DeveloperPerms = ['accounts.view_profile',
+                      'project.view_project', 'developers.view_developer']
 
-    if A_created:
-        Admins.permissions.set(get_permissions(AdminsPerms))
-        Admins.save()
-        print("done1")
+    Admins.permissions.set(get_permissions(AdminsPerms))
+    Admins.save()
 
-    if M_created:
-        Manager.permissions.set(get_permissions(MangerPerms))
-        Manager.save()
-        print("done2")
+    Manager.permissions.set(get_permissions(MangerPerms))
+    Manager.save()
 
-    if D_created:
-        Developer.permissions.set(get_permissions(DeveloperPerms))
-        Developer.save()
-        print("done 3")
+    Developer.permissions.set(get_permissions(DeveloperPerms))
+    Developer.save()

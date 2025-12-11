@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Developer, Skill
 from .forms import *
+from accounts.PermHandler import *
 # Create your views here.
 
 
@@ -18,10 +19,12 @@ class DevelopersList(LoginRequiredMixin, ListView):
         return Developer.objects.all()
 
 
-class DevelopersDetail(LoginRequiredMixin, DetailView):
+class DevelopersDetail(LoginRequiredMixin, OwnerOrPermissionMixin, DetailView):
     model = Developer
     template_name = "developers/developer_detail.html"
     context_object_name = "developer"
+    owner_field = 'user'
+    permission_required = ('developers.view_developer')
 
     def get_object(self, queryset=...):
         pk = self.kwargs.get("pk")
@@ -47,6 +50,7 @@ class DevelopersCreation(LoginRequiredMixin, CreateView):
         skillForm = context["skillForm"]
 
         if skillForm.is_valid():
+            form.instance.user = self.request.user
             dev = form.save()
             skillForm.instance = dev
             skillForm.save()
@@ -54,12 +58,15 @@ class DevelopersCreation(LoginRequiredMixin, CreateView):
             return super().form_valid(form)
 
 
-class UpdateDevelopers(LoginRequiredMixin, UpdateView):
+class UpdateDevelopers(LoginRequiredMixin, OwnerOrPermissionMixin, UpdateView):
     model = Developer
     form_class = DeveloperForm
     template_name = "developers/developer_updateform.html"
     success_url = "/developers/"
     context_object_name = 'developers'
+    owner_field = 'user'
+    permission_required = ('developers.change_developer')
+    permission_denied_message = "dont access to this view"
 
     def form_valid(self, form):
 
@@ -67,10 +74,12 @@ class UpdateDevelopers(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DeleteDevelopers(LoginRequiredMixin, DeleteView):
+class DeleteDevelopers(LoginRequiredMixin, OwnerOrPermissionMixin, DeleteView):
     model = Developer
     template_name = "developers/developer_detail.html"
     success_url = "/developers/"
+    owner_field = 'user'
+    permission_required = ('developers.delete_developer')
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, "developers deleted successfully!!!")

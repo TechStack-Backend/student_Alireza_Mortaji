@@ -5,7 +5,7 @@ from .forms import ProjectForm
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
-
+from accounts.PermHandler import owner_or_have_permission, OwnerOrPermissionMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import permission_required
 
@@ -33,7 +33,7 @@ class ProjectDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     template_name = "project/project_detail.html"
     context_object_name = "project"
     permission_denied_message = "you dont have access to see details of project"
-    permission_required = "project.detail_project"
+    permission_required = "project.view_project"
 
     def get_object(self, queryset=None):
         pk = self.kwargs.get("pk")
@@ -59,20 +59,22 @@ class ProjectDetail(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 def CreateProject(request):
     if request.method == "POST":
         form = ProjectForm(request.POST)
+        form.instance.owner = request.user
         if form.is_valid():
             form.save()
 
-            return redirect('projects:project_list')
+        return redirect('projects:project_list')
     else:
         form = ProjectForm()
         return render(request, template_name="project/project_form.html", context={'form': form})
 
 
-class DeleteProject(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class DeleteProject(LoginRequiredMixin, OwnerOrPermissionMixin, DeleteView):
     model = Project
     template_name = "project/project_detail.html"
     success_url = reverse_lazy("projects:project_list")
     raise_exception = False
+    owner_field = 'owner'
     permission_required = "project.delete_project"
     permission_denied_message = "you don't have access to delete this project"
     login_url = 'accounts:login'
