@@ -1,6 +1,8 @@
-from django.db.models.signals import post_migrate
+from django.db.models.signals import post_migrate, post_save, pre_save
 from django.dispatch import receiver
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group, Permission, User
+from .models import Profile
+from project.models import Project
 
 
 def get_permissions(perms_list):
@@ -41,3 +43,15 @@ def CreateGroups(sender, **kwargs):
 
     Developer.permissions.set(get_permissions(DeveloperPerms))
     Developer.save()
+
+
+@receiver(signal=post_save, sender=User)
+def createProfile(sender, instance: User, **kwargs):
+    Profile.objects.create(user=instance)
+    devG = Group.objects.get(name="Developer")
+    instance.groups.add(devG)
+
+
+@receiver(signal=pre_save, sender=Project)
+def addPrefix(sender, instance, **kwargs):
+    instance.title = "**"+instance.title
